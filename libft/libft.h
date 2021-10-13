@@ -6,7 +6,7 @@
 /*   By: jserpa-p <jserpa-p@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/22 14:53:13 by jserpa-p          #+#    #+#             */
-/*   Updated: 2021/04/26 14:46:44 by jserpa-p         ###   ########.fr       */
+/*   Updated: 2021/10/13 15:47:05 by jserpa-p         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <math.h>
 # include <string.h>
 # include <wchar.h>
+# include <stddef.h>
 
 # define ASCII_OFFSET_NUM 48
 # define ASCII_OFFSET_ALPHA 32
@@ -33,7 +34,7 @@ typedef struct s_list
 	struct s_list	*next;
 }				t_list;
 
-typedef struct		s_format
+typedef struct s_format
 {
 	char			flags[9];
 	int				width;
@@ -41,6 +42,25 @@ typedef struct		s_format
 	char			size[9];
 	char			type;
 }					t_format;
+
+typedef union u_content
+{
+	void	*ptr;
+	int		i;
+	char	*str;
+}				t_content;
+
+typedef struct s_stack_elem
+{
+	t_content			cont;
+	struct s_stack_elem	*prev;
+}				t_stack_elem;
+
+typedef struct s_stack
+{
+	size_t			size;
+	t_stack_elem	*top;
+}				t_stack;
 
 /*
 ** MEMORY FUNCTIONS
@@ -54,6 +74,7 @@ void			*ft_memchr(const void *s, int c, size_t n);
 int				ft_memcmp(const void *s1, const void *s2, size_t n);
 void			*ft_calloc(size_t nelem, size_t elsize);
 void			ft_swap(int *a, int *b);
+void			ft_free(void *ptr);
 
 /*
 ** CONVERSION FUNCTIONS
@@ -84,7 +105,7 @@ size_t			ft_strlcpy(char *dst, const char *src, size_t dstsize);
 char			*ft_strchr(const char *s, int c);
 char			*ft_strrchr(const char *s, int c);
 char			*ft_strnstr(const char *big, const char *little,
-								size_t len);
+					size_t len);
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t			ft_nstrlen(const char *str, size_t maxlen);
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -130,5 +151,19 @@ t_list			*ft_lstmap(t_list *lst, void *(*f)(void *),
 */
 
 int				ft_sqrt(int nb);
+
+/*
+** STACK FUNCTIONS
+*/
+
+void			ft_stackerase(t_stack *stack, void (*del)(t_content));
+size_t			ft_stacksize(t_stack *stack);
+t_content		ft_stackpop(t_stack *stack);
+t_stack			*ft_stackdup(t_stack *o, t_content(*dup)(t_content));
+t_stack			*ft_stacknew(void);
+t_content		ft_stackpeek(t_stack *stack);
+void			ft_stackprint(t_stack *s, char *(*to_str)(t_content),
+					char *delim);
+void			ft_stackpush(t_stack *stack, t_content content);
 
 #endif
